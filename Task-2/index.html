@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Weather API Consumer</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a, #1d4ed8, #38bdf8);
+            color: white;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: auto;
+            padding: 40px 0;
+        }
+
+        /* Header */
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #dbeafe;
+            font-size: 16px;
+        }
+
+        /* Search */
+
+        .search-card {
+            background: white;
+            color: #1e293b;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .search-card h2 {
+            margin-bottom: 15px;
+        }
+
+        .search {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search input {
+            flex: 1;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .search button {
+            padding: 13px 25px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .search button:hover {
+            background: #1d4ed8;
+        }
+
+        /* Location */
+
+        .location-card {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .location-card h2 {
+            margin-bottom: 20px;
+        }
+
+        .location-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .location-item {
+            background: rgba(0, 0, 0, 0.15);
+            padding: 18px;
+            border-radius: 10px;
+        }
+
+        .location-item p {
+            color: #bfdbfe;
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        .location-item h3 {
+            font-size: 18px;
+        }
+
+        /* Weather */
+
+        .weather-card {
+            background: white;
+            color: #1e293b;
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        .weather-card h2 {
+            margin-bottom: 20px;
+        }
+
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .weather-box {
+            background: #f1f5f9;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .weather-box .icon {
+            font-size: 35px;
+            margin-bottom: 10px;
+        }
+
+        .weather-box p {
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .weather-box h3 {
+            font-size: 28px;
+            color: #1d4ed8;
+        }
+
+        /* Summary */
+
+        .summary {
+            margin-top: 25px;
+            padding: 20px;
+            background: #eff6ff;
+            border-radius: 10px;
+            text-align: center;
+            color: #1e3a8a;
+            font-size: 16px;
+        }
+
+        /* Error */
+
+        .error {
+            color: #dc2626;
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        /* Loading */
+
+        .loading {
+            display: none;
+            margin-top: 15px;
+            color: #2563eb;
+            font-weight: bold;
+        }
+
+        /* Mobile */
+
+        @media (max-width: 700px) {
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .search {
+                flex-direction: column;
+            }
+
+            .search button {
+                width: 100%;
+            }
+
+            .location-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .weather-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>🌤️ Weather API Consumer</h1>
+
+        <p>
+            Get real-time weather information using Weather API
+        </p>
+
+    </div>
+
+
+    <!-- SEARCH -->
+
+    <div class="search-card">
+
+        <h2>🔍 Search Weather</h2>
+
+        <div class="search">
+
+            <input
+                type="text"
+                id="cityInput"
+                placeholder="Enter city name, e.g. Bengaluru"
+            >
+
+            <button onclick="getWeather()">
+                Get Weather
+            </button>
+
+        </div>
+
+        <div id="loading" class="loading">
+            Fetching weather data...
+        </div>
+
+        <div id="error" class="error"></div>
+
+    </div>
+
+
+    <!-- LOCATION -->
+
+    <div class="location-card">
+
+        <h2>📍 Location Information</h2>
+
+        <div class="location-grid">
+
+            <div class="location-item">
+
+                <p>City</p>
+
+                <h3 id="city">--</h3>
+
+            </div>
+
+
+            <div class="location-item">
+
+                <p>State</p>
+
+                <h3 id="state">--</h3>
+
+            </div>
+
+
+            <div class="location-item">
+
+                <p>Country</p>
+
+                <h3 id="country">--</h3>
+
+            </div>
+
+
+            <div class="location-item">
+
+                <p>Coordinates</p>
+
+                <h3 id="coordinates">--</h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- WEATHER -->
+
+    <div class="weather-card">
+
+        <h2>🌦️ Current Weather</h2>
+
+        <div class="weather-grid">
+
+            <div class="weather-box">
+
+                <div class="icon">🌡️</div>
+
+                <p>Temperature</p>
+
+                <h3 id="temperature">-- °C</h3>
+
+            </div>
+
+
+            <div class="weather-box">
+
+                <div class="icon">💧</div>
+
+                <p>Humidity</p>
+
+                <h3 id="humidity">-- %</h3>
+
+            </div>
+
+
+            <div class="weather-box">
+
+                <div class="icon">💨</div>
+
+                <p>Wind Speed</p>
+
+                <h3 id="wind">-- km/h</h3>
+
+            </div>
+
+        </div>
+
+
+        <!-- SUMMARY -->
+
+        <div class="summary" id="summary">
+
+            Enter a city name above to get current weather information.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+async function getWeather() {
+
+    const cityInput =
+        document.getElementById("cityInput");
+
+    const cityName =
+        cityInput.value.trim();
+
+    const error =
+        document.getElementById("error");
+
+    const loading =
+        document.getElementById("loading");
+
+
+    error.textContent = "";
+
+
+    if (cityName === "") {
+
+        error.textContent =
+            "Please enter a city name.";
+
+        return;
+    }
+
+
+    loading.style.display = "block";
+
+
+    try {
+
+        /* =================================
+           STEP 1: GEOCODING API
+        ================================= */
+
+        const geocodingURL =
+            "https://geocoding-api.open-meteo.com/v1/search"
+            + "?name="
+            + encodeURIComponent(cityName)
+            + "&count=1"
+            + "&language=en"
+            + "&format=json";
+
+
+        const locationResponse =
+            await fetch(geocodingURL);
+
+
+        if (!locationResponse.ok) {
+
+            throw new Error(
+                "Unable to connect to location API."
+            );
+
+        }
+
+
+        const locationData =
+            await locationResponse.json();
+
+
+        if (
+            !locationData.results ||
+            locationData.results.length === 0
+        ) {
+
+            error.textContent =
+                "City not found. Please enter a valid city.";
+
+            loading.style.display = "none";
+
+            return;
+        }
+
+
+        const cityData =
+            locationData.results[0];
+
+
+        const city =
+            cityData.name;
+
+        const state =
+            cityData.admin1 || "N/A";
+
+        const country =
+            cityData.country || "N/A";
+
+        const latitude =
+            cityData.latitude;
+
+        const longitude =
+            cityData.longitude;
+
+
+        /* =================================
+           DISPLAY LOCATION
+        ================================= */
+
+        document.getElementById("city")
+            .textContent = city;
+
+        document.getElementById("state")
+            .textContent = state;
+
+        document.getElementById("country")
+            .textContent = country;
+
+        document.getElementById("coordinates")
+            .textContent =
+            latitude + ", " + longitude;
+
+
+        /* =================================
+           STEP 2: WEATHER API
+        ================================= */
+
+        const weatherURL =
+            "https://api.open-meteo.com/v1/forecast"
+            + "?latitude="
+            + latitude
+            + "&longitude="
+            + longitude
+            + "&current="
+            + "temperature_2m,"
+            + "relative_humidity_2m,"
+            + "wind_speed_10m";
+
+
+        const weatherResponse =
+            await fetch(weatherURL);
+
+
+        if (!weatherResponse.ok) {
+
+            throw new Error(
+                "Unable to connect to weather API."
+            );
+
+        }
+
+
+        const weatherData =
+            await weatherResponse.json();
+
+
+        /* =================================
+           STEP 3: EXTRACT WEATHER
+        ================================= */
+
+        const current =
+            weatherData.current;
+
+
+        const temperature =
+            current.temperature_2m;
+
+        const humidity =
+            current.relative_humidity_2m;
+
+        const windSpeed =
+            current.wind_speed_10m;
+
+
+        /* =================================
+           DISPLAY WEATHER
+        ================================= */
+
+        document.getElementById("temperature")
+            .textContent =
+            temperature + " °C";
+
+
+        document.getElementById("humidity")
+            .textContent =
+            humidity + " %";
+
+
+        document.getElementById("wind")
+            .textContent =
+            windSpeed + " km/h";
+
+
+        /* =================================
+           SUMMARY
+        ================================= */
+
+        document.getElementById("summary")
+            .textContent =
+            "Current weather in "
+            + city
+            + ", "
+            + country
+            + ": "
+            + temperature
+            + "°C, Humidity "
+            + humidity
+            + "%, Wind Speed "
+            + windSpeed
+            + " km/h.";
+
+
+    }
+
+    catch (errorObject) {
+
+        error.textContent =
+            "Error connecting to the weather API.";
+
+        console.error(errorObject);
+
+    }
+
+
+    loading.style.display = "none";
+
+}
+
+</script>
+
+</body>
+</html>
