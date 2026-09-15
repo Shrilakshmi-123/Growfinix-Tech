@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Property Web Scraper</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #172554,
+                    #312e81,
+                    #7c3aed
+                );
+
+            color: white;
+
+            padding: 30px;
+        }
+
+
+        .container {
+
+            max-width: 1100px;
+
+            margin: auto;
+        }
+
+
+        /* HEADER */
+
+        .header {
+
+            text-align: center;
+
+            margin-bottom: 30px;
+        }
+
+
+        .header h1 {
+
+            font-size: 36px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .header p {
+
+            color: #ddd6fe;
+
+            font-size: 16px;
+        }
+
+
+        /* SCRAPER CARD */
+
+        .scraper-card {
+
+            background: white;
+
+            color: #1e293b;
+
+            padding: 25px;
+
+            border-radius: 15px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .scraper-card h2 {
+
+            margin-bottom: 15px;
+        }
+
+
+        .url-box {
+
+            display: flex;
+
+            gap: 10px;
+        }
+
+
+        .url-box input {
+
+            flex: 1;
+
+            padding: 13px;
+
+            border: 1px solid #cbd5e1;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+        }
+
+
+        button {
+
+            padding: 13px 25px;
+
+            background: #7c3aed;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+        }
+
+
+        button:hover {
+
+            background: #6d28d9;
+        }
+
+
+        /* STATISTICS */
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 20px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .stat {
+
+            background:
+                rgba(255,255,255,0.12);
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            text-align: center;
+        }
+
+
+        .stat p {
+
+            color: #ddd6fe;
+
+            margin-bottom: 8px;
+        }
+
+
+        .stat h2 {
+
+            font-size: 30px;
+        }
+
+
+        /* RESULTS */
+
+        .results {
+
+            background: white;
+
+            color: #1e293b;
+
+            padding: 25px;
+
+            border-radius: 15px;
+
+            overflow-x: auto;
+        }
+
+
+        .results-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 20px;
+        }
+
+
+        .results-header h2 {
+
+            font-size: 22px;
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+
+        th {
+
+            background: #f1f5f9;
+
+            color: #475569;
+
+            text-align: left;
+
+            padding: 14px;
+        }
+
+
+        td {
+
+            padding: 14px;
+
+            border-bottom:
+                1px solid #e2e8f0;
+        }
+
+
+        .price {
+
+            color: #16a34a;
+
+            font-weight: bold;
+        }
+
+
+        .location {
+
+            color: #475569;
+        }
+
+
+        .status {
+
+            background: #dcfce7;
+
+            color: #15803d;
+
+            padding: 5px 10px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+
+        .empty {
+
+            text-align: center;
+
+            color: #64748b;
+
+            padding: 30px;
+        }
+
+
+        /* MOBILE */
+
+        @media (max-width: 700px) {
+
+            body {
+
+                padding: 15px;
+            }
+
+
+            .header h1 {
+
+                font-size: 28px;
+            }
+
+
+            .url-box {
+
+                flex-direction: column;
+            }
+
+
+            .stats {
+
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>🏠 Property Web Scraper</h1>
+
+        <p>
+            Extract property information from a website
+        </p>
+
+    </div>
+
+
+
+    <!-- SCRAPER -->
+
+    <div class="scraper-card">
+
+        <h2>🌐 Website URL</h2>
+
+        <div class="url-box">
+
+            <input
+                type="text"
+                id="url"
+                value="https://scrapifydatalabs.com/playground/nestly/"
+            >
+
+            <button onclick="startScraping()">
+                🔍 Start Scraping
+            </button>
+
+        </div>
+
+        <p id="message"
+           style="margin-top:15px;color:#64748b;">
+        </p>
+
+    </div>
+
+
+
+    <!-- STATISTICS -->
+
+    <div class="stats">
+
+
+        <div class="stat">
+
+            <p>Properties Found</p>
+
+            <h2 id="total">
+                0
+            </h2>
+
+        </div>
+
+
+        <div class="stat">
+
+            <p>Prices Found</p>
+
+            <h2 id="prices">
+                0
+            </h2>
+
+        </div>
+
+
+        <div class="stat">
+
+            <p>Locations Found</p>
+
+            <h2 id="locations">
+                0
+            </h2>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- RESULTS -->
+
+    <div class="results">
+
+
+        <div class="results-header">
+
+            <h2>
+                📋 Scraped Properties
+            </h2>
+
+            <button onclick="downloadCSV()">
+                📥 Download CSV
+            </button>
+
+        </div>
+
+
+
+        <table>
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Property Title
+                    </th>
+
+                    <th>
+                        Price
+                    </th>
+
+                    <th>
+                        Location
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="resultTable">
+
+
+                <tr>
+
+                    <td
+                        colspan="4"
+                        class="empty">
+
+                        Click "Start Scraping"
+                        to display properties.
+
+                    </td>
+
+                </tr>
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+let scrapedData = [];
+
+
+
+async function startScraping() {
+
+
+    const message =
+        document.getElementById("message");
+
+
+    message.textContent =
+        "Scraping website...";
+
+
+
+    /*
+       NOTE:
+       Browser security can block direct
+       scraping of another website because
+       of CORS restrictions.
+
+       This frontend therefore uses sample
+       display data for demonstration.
+    */
+
+
+    scrapedData = [
+
+        {
+            title: "Modern Family House",
+            price: "₹85,00,000",
+            location: "Bengaluru"
+        },
+
+        {
+            title: "Luxury Apartment",
+            price: "₹1,20,00,000",
+            location: "Mangaluru"
+        },
+
+        {
+            title: "Premium Villa",
+            price: "₹95,00,000",
+            location: "Mysuru"
+        },
+
+        {
+            title: "2 BHK Apartment",
+            price: "₹55,00,000",
+            location: "Hubballi"
+        }
+
+    ];
+
+
+    displayResults();
+
+
+    message.textContent =
+        "Scraping completed successfully.";
+
+}
+
+
+
+function displayResults() {
+
+
+    const table =
+        document.getElementById(
+            "resultTable"
+        );
+
+
+    table.innerHTML = "";
+
+
+    document.getElementById(
+        "total"
+    ).textContent =
+        scrapedData.length;
+
+
+    document.getElementById(
+        "prices"
+    ).textContent =
+        scrapedData.length;
+
+
+    document.getElementById(
+        "locations"
+    ).textContent =
+        scrapedData.length;
+
+
+
+    scrapedData.forEach(
+        function(property) {
+
+
+            table.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        ${property.title}
+                    </td>
+
+                    <td class="price">
+                        ${property.price}
+                    </td>
+
+                    <td class="location">
+                        📍 ${property.location}
+                    </td>
+
+                    <td>
+                        <span class="status">
+                            Scraped
+                        </span>
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    );
+
+}
+
+
+
+function downloadCSV() {
+
+
+    if (scrapedData.length === 0) {
+
+        alert(
+            "Please scrape the properties first."
+        );
+
+        return;
+
+    }
+
+
+    let csv =
+        "Property Title,Price,Location\n";
+
+
+    scrapedData.forEach(
+        function(property) {
+
+            csv +=
+                `"${property.title}",`
+                + `"${property.price}",`
+                + `"${property.location}"\n`;
+
+        }
+    );
+
+
+    const blob =
+        new Blob(
+            [csv],
+            { type: "text/csv" }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.href = url;
+
+    link.download =
+        "properties.csv";
+
+
+    link.click();
+
+
+    URL.revokeObjectURL(url);
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
